@@ -1,4 +1,3 @@
-package JP;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -201,55 +200,74 @@ public class EmployeeManagementSystemGUI extends JFrame {
         setVisible(true);
     }
 
+
     private void addEmployee() {
         // Create dialog for adding employee
         JDialog addEmployeeDialog = new JDialog(this, "Add Employee", true);
-        addEmployeeDialog.setSize(300, 200);
-        addEmployeeDialog.setLayout(new GridLayout(5, 2));
-
+        addEmployeeDialog.setLayout(new GridLayout(6, 2));
+    
         addEmployeeDialog.add(new JLabel("Name:"));
         JTextField nameField = new JTextField();
+        nameField.setColumns(15); // Setting width to 15 characters
         addEmployeeDialog.add(nameField);
-
+    
         addEmployeeDialog.add(new JLabel("ID:"));
         JTextField idField = new JTextField();
+        idField.setColumns(15); // Setting width to 15 characters
         addEmployeeDialog.add(idField);
-
+    
         addEmployeeDialog.add(new JLabel("Department:"));
         JTextField departmentField = new JTextField();
+        departmentField.setColumns(15); // Setting width to 15 characters
         addEmployeeDialog.add(departmentField);
-
+    
         addEmployeeDialog.add(new JLabel("Position:"));
         JTextField positionField = new JTextField();
+        positionField.setColumns(15); // Setting width to 15 characters
         addEmployeeDialog.add(positionField);
-
+    
         addEmployeeDialog.add(new JLabel("Salary:"));
         JTextField salaryField = new JTextField();
+        salaryField.setColumns(15); // Setting width to 15 characters
         addEmployeeDialog.add(salaryField);
-
+    
+        addEmployeeDialog.add(new JLabel()); // Empty label for alignment
         JButton addButton = new JButton("Add");
         addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    String name = nameField.getText();
-                    int id = Integer.parseInt(idField.getText());
-                    String department = departmentField.getText();
-                    String position = positionField.getText();
-                    double salary = Double.parseDouble(salaryField.getText());
-
+                    String name = nameField.getText().trim();
+                    int id = Integer.parseInt(idField.getText().trim());
+                    String department = departmentField.getText().trim();
+                    String position = positionField.getText().trim();
+                    double salary = Double.parseDouble(salaryField.getText().trim());
+    
+                    if (name.isEmpty() || department.isEmpty() || position.isEmpty()) {
+                        throw new IllegalArgumentException("Name, department, and position cannot be empty.");
+                    }
+    
+                    if (salary <= 0) {
+                        throw new IllegalArgumentException("Salary must be a positive number.");
+                    }
+    
                     ems.addEmployee(new Employee(name, id, department, position, salary));
                     addEmployeeDialog.dispose();
                     displayAllEmployees();
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(addEmployeeDialog, "Invalid input. Please enter numeric values for ID and Salary.", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(addEmployeeDialog, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
-        addEmployeeDialog.add(addButton);
-
+        addEmployeeDialog.add(addButton, BorderLayout.CENTER);
+    
+        addEmployeeDialog.pack();
         addEmployeeDialog.setVisible(true);
     }
+    
+
 
     private void removeEmployee() {
         String idString = JOptionPane.showInputDialog(this, "Enter Employee ID to remove:");
@@ -273,27 +291,32 @@ public class EmployeeManagementSystemGUI extends JFrame {
                 if (employeeToUpdate != null) {
                     JDialog updateEmployeeDialog = new JDialog(this, "Update Employee", true);
                     updateEmployeeDialog.setSize(300, 200);
-                    updateEmployeeDialog.setLayout(new GridLayout(5, 2));
+                    updateEmployeeDialog.setLayout(new GridLayout(6, 2));
 
                     updateEmployeeDialog.add(new JLabel("Name:"));
                     JTextField nameField = new JTextField(employeeToUpdate.getName());
+                    nameField.setColumns(15);
                     updateEmployeeDialog.add(nameField);
 
                     updateEmployeeDialog.add(new JLabel("ID:"));
                     JTextField idField = new JTextField(String.valueOf(employeeToUpdate.getId()));
+                    idField.setColumns(15);
                     idField.setEditable(false);
                     updateEmployeeDialog.add(idField);
 
                     updateEmployeeDialog.add(new JLabel("Department:"));
                     JTextField departmentField = new JTextField(employeeToUpdate.getDepartment());
+                    departmentField.setColumns(15);
                     updateEmployeeDialog.add(departmentField);
 
                     updateEmployeeDialog.add(new JLabel("Position:"));
                     JTextField positionField = new JTextField(employeeToUpdate.getPosition());
+                    positionField.setColumns(15);
                     updateEmployeeDialog.add(positionField);
 
                     updateEmployeeDialog.add(new JLabel("Salary:"));
                     JTextField salaryField = new JTextField(String.valueOf(employeeToUpdate.getSalary()));
+                    salaryField.setColumns(15);
                     updateEmployeeDialog.add(salaryField);
 
                     JButton updateButton = new JButton("Update");
@@ -315,7 +338,7 @@ public class EmployeeManagementSystemGUI extends JFrame {
                             }
                         }
                     });
-                    updateEmployeeDialog.add(updateButton);
+                    updateEmployeeDialog.add(updateButton,BorderLayout.CENTER);
 
                     updateEmployeeDialog.setVisible(true);
                 } else {
@@ -326,6 +349,7 @@ public class EmployeeManagementSystemGUI extends JFrame {
             }
         }
     }
+     
 
     private void displayAllEmployees() {
         java.util.List<Employee> employees = ems.getAllEmployees();
